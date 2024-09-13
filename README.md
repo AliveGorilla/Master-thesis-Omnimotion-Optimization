@@ -1,4 +1,6 @@
-Proposal model optimisation to the # Tracking Everything Everywhere All at Once
+Proposal model optimisation to the "Tracking Everything Everywhere All at Once" paper
+
+Here's the original installation: 
 
 #### [Project Page](https://omnimotion.github.io/) | [Paper](https://arxiv.org/pdf/2306.05422.pdf) | [Video](https://www.youtube.com/watch?v=KHoAG3gA024)
 ## Installation
