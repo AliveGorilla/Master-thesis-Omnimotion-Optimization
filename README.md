@@ -30,13 +30,13 @@ A more detailed description of this work can be found in my thesis. Below is a s
 
 1. The original implementation consisted of a large number of different loss functions. I simplified the model by removing unnecessary losses (specifically, the "smoothness loss") after conducting an empirical analysis.
 
-2. I modified the hard-mining method. Instead of randomly selecting regions with the highest probability of error, I aggregated these maps over the course of training. This allowed the model to focus on regions with consistently high errors over time.
+2. I modified the hard-mining method. Instead of randomly selecting regions with the highest probability of error, I aggregated these maps over the course of training. This allowed the model to focus on regions with consistently high errors over time. [Implementation](https://github.com/AliveGorilla/Master-thesis-Omnimotion-Optimization/blob/23850c67ce1fb5c612bdb2d418a90250d2e32801/loaders/raft.py#L107-L122).
 
-3. The original OmniMotion model did not include 3D coordinate encoding. I added a simple encoding option by applying periodic functions to the 3-dimensional input coordinates, producing a 66-dimensional vector as output.
+3. The original OmniMotion model did not include 3D coordinate encoding. I added a simple encoding option by applying periodic functions to the 3-dimensional input coordinates, producing a 66-dimensional vector as output (see ReadMe). 
 
-4. During the training stage, the Invertible Neural Network trained the time representation (frame number) more than once in each epoch. I addressed this by locking the training of the time representation at the 40,000-epoch threshold and using the final result as a global representation ("freezing" it).
+4. During the training stage, the Invertible Neural Network trained the time representation (frame number) more than once in each epoch. I addressed this by locking the training of the time representation at the 40,000-epoch threshold and using the final result as a global representation ("freezing" it). [Implementation](https://github.com/AliveGorilla/Master-thesis-Omnimotion-Optimization/blob/23850c67ce1fb5c612bdb2d418a90250d2e32801/trainer.py#L577-L590), [Usage](https://github.com/AliveGorilla/Master-thesis-Omnimotion-Optimization/blob/23850c67ce1fb5c612bdb2d418a90250d2e32801/trainer.py#L216-L251).
 
-5. In addition to freezing the number of epochs, I applied a faster and more advanced method, [TCNN](https://github.com/NVlabs/tiny-cuda-nn), to further enhance the training process.
+5. In addition to freezing the number of epochs, I applied a faster and more advanced method, [TCNN](https://github.com/NVlabs/tiny-cuda-nn), to further enhance the training process. [Implementation](https://github.com/AliveGorilla/Master-thesis-Omnimotion-Optimization/blob/23850c67ce1fb5c612bdb2d418a90250d2e32801/trainer.py#L28-L62), [Usage](https://github.com/AliveGorilla/Master-thesis-Omnimotion-Optimization/blob/23850c67ce1fb5c612bdb2d418a90250d2e32801/trainer.py#L216-L251).
 
 ## Future Ideas
 
