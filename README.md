@@ -49,3 +49,6 @@ During my research, I identified several advanced ideas and solutions that could
 3. Several improvements to OmniMotion suggest that incorporating additional information (e.g., depth maps) can significantly enhance the overall quality of the results.
 
 While these ideas remain unimplemented due to time constraints, I plan to explore them further as a future PhD student or as part of a personal project.
+
+PS. 
+For training and testing the setting from the [Issues report](https://github.com/qianqianwang68/omnimotion/issues/37) were used.
