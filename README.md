@@ -25,6 +25,7 @@ pip install matplotlib tensorboard scipy opencv-python tqdm tensorboardX configa
     python train.py --config configs/default.txt --data_dir {sequence_directory}
     ```
 ## Modification
+#### [Thesis paper](https://drive.google.com/file/d/1y9zp6Q3TQnWPWTHwknk5q1jXbK4yin5G/view?usp=sharing)
 
 A more detailed description of this work can be found in my thesis. Below is a summary of the modifications and changes I made:
 
