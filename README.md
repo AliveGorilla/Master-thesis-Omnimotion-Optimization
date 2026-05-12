@@ -1,55 +1,282 @@
-Proposal model optimisation to the "Tracking Everything Everywhere All at Once" paper
+# Optimized OmniMotion Pipeline for Dense Video Tracking
 
-Links to the original paper:
-#### [Project Page](https://omnimotion.github.io/) | [Paper](https://arxiv.org/pdf/2306.05422.pdf) | [Video](https://www.youtube.com/watch?v=KHoAG3gA024)
+Optimization of the OmniMotion neural tracking framework for faster, more stable, and computationally efficient dense motion tracking in long video sequences.
 
-## Here's the original installation: 
-The code is tested with `python=3.8` and `torch=1.10.0+cu111` on an A100 GPU.
+---
+
+## Project Overview
+
+This project improves the original OmniMotion architecture by introducing multiple engineering and optimization-level modifications focused on:
+
+- improving training stability,
+- accelerating convergence,
+- reducing unnecessary computational overhead,
+- enhancing long-sequence motion consistency.
+
+The work was developed as part of a Master's thesis focused on neural motion tracking and video understanding.
+
+---
+
+# Business Problem
+
+Dense motion tracking models are computationally expensive and difficult to scale for long video sequences.
+
+In real-world applications such as:
+
+- industrial defect inspection,
+- autonomous driving perception,
+- robotics,
+- sports analytics,
+- video surveillance,
+
+tracking instability and slow convergence significantly increase GPU costs and reduce deployment feasibility.
+
+This project focuses on improving the training efficiency and robustness of the OmniMotion framework through architectural and optimization-level modifications.
+
+---
+
+# Key Results
+
+- Simplified loss architecture to reduce computational overhead
+- Improved convergence stability through temporal embedding freezing
+- Enhanced hard-mining strategy for persistent error correction
+- Accelerated training using Tiny-CUDA-NN (TCNN)
+- Improved optimization consistency for long video sequences
+
+---
+
+# Architecture
+
+## Pipeline Overview
+
+```text
+Input Video Sequence
+        ↓
+RAFT / Feature Tracking
+        ↓
+Feature Extraction
+        ↓
+3D Coordinate Encoding
+        ↓
+Invertible Neural Network (INN)
+        ↓
+Hard Mining Optimization
+        ↓
+Dense Motion Tracking Output
 ```
+
+> Add architecture diagram here (recommended: Miro / Figma / draw.io)
+
+Example:
+
+```md
+![Architecture](assets/architecture.png)
+```
+
+---
+
+# Engineering Optimizations
+
+## 1. Loss Function Simplification
+
+The original OmniMotion implementation used multiple loss functions during optimization.
+
+After empirical evaluation, the smoothness loss was removed to reduce unnecessary computational overhead while preserving tracking quality.
+
+### Impact
+
+- Reduced optimization complexity
+- Lower computational cost
+- Cleaner convergence behavior
+
+---
+
+## 2. Persistent Hard-Mining Strategy
+
+The original hard-mining implementation randomly selected regions with the highest probability of error.
+
+This project introduced an aggregated hard-mining strategy that accumulates error regions throughout training, allowing the model to focus on consistently problematic areas.
+
+### Impact
+
+- Better error localization
+- Improved robustness
+- More stable optimization over time
+
+### Implementation
+
+- Aggregated error map tracking
+- Persistent high-error region sampling
+
+---
+
+## 3. 3D Coordinate Encoding
+
+The original OmniMotion model did not include explicit 3D coordinate encoding.
+
+A periodic positional encoding mechanism was introduced for 3D coordinates, transforming the input into a higher-dimensional representation.
+
+### Impact
+
+- Improved spatial representation quality
+- Better temporal consistency
+- Enhanced feature expressiveness
+
+---
+
+## 4. Temporal Embedding Freezing
+
+The original architecture repeatedly retrained temporal embeddings throughout the optimization process.
+
+This project introduced temporal embedding freezing after 40,000 epochs, using the learned representation as a stable global temporal reference.
+
+### Impact
+
+- Improved training stability
+- Reduced optimization noise
+- Faster convergence behavior
+
+---
+
+## 5. Tiny-CUDA-NN (TCNN) Integration
+
+The project integrated Tiny-CUDA-NN (TCNN) to accelerate neural field computations and improve training efficiency.
+
+### Impact
+
+- Faster GPU training
+- Improved runtime performance
+- Reduced computational bottlenecks
+
+### Technologies
+
+- CUDA
+- Tiny-CUDA-NN
+- PyTorch
+
+---
+
+# Performance Improvements
+
+| Optimization | Engineering Benefit |
+|---|---|
+| Loss simplification | Reduced computational overhead |
+| Persistent hard mining | Improved error-region learning |
+| Temporal embedding freezing | Increased optimization stability |
+| Tiny-CUDA-NN integration | Faster convergence and GPU efficiency |
+| 3D coordinate encoding | Improved spatial representation |
+
+---
+
+# Potential Real-World Applications
+
+- Industrial defect detection
+- Motion analysis in sports
+- Autonomous navigation systems
+- Robotics perception
+- Video understanding systems
+- Long-sequence object tracking
+
+---
+
+# Tech Stack
+
+- Python
+- PyTorch
+- CUDA
+- Tiny-CUDA-NN
+- Computer Vision
+- Neural Rendering
+- Dense Motion Tracking
+- RAFT
+- DINO
+- Neural Networks
+- Deep Learning
+
+---
+
+# Original Paper
+
+Links to the original OmniMotion project:
+
+- [Project Page](https://omnimotion.github.io/)
+- [Paper](https://arxiv.org/pdf/2306.05422.pdf)
+- [Video](https://www.youtube.com/watch?v=KHoAG3gA024)
+
+---
+
+# Installation
+
+The project was tested with:
+
+- Python 3.8
+- Torch 1.10.0 + CUDA 11.1
+- NVIDIA A100 GPU
+
+```bash
 git clone --recurse-submodules https://github.com/qianqianwang68/omnimotion/
 cd omnimotion/
+
 conda create -n omnimotion python=3.8
 conda activate omnimotion
-pip install torch==1.10.0+cu111 torchvision==0.11.0+cu111 torchaudio==0.10.0 -f https://download.pytorch.org/whl/torch_stable.html
-pip install matplotlib tensorboard scipy opencv-python tqdm tensorboardX configargparse ipdb kornia imageio[ffmpeg]
+
+pip install torch==1.10.0+cu111 torchvision==0.11.0+cu111 torchaudio==0.10.0 \
+-f https://download.pytorch.org/whl/torch_stable.html
+
+pip install matplotlib tensorboard scipy opencv-python tqdm tensorboardX \
+configargparse ipdb kornia imageio[ffmpeg]
 ```
 
-## Training
-1. Please refer to the [preprocessing instructions](preprocessing/README.md) for preparing input data 
-   for training OmniMotion. We also provide some processed [data](https://omnimotion.cs.cornell.edu/dataset/)
-   that you can download, unzip and directly train on. (Note that depending on the network speed, 
-   it may be faster to run the processing script locally than downloading the processed data).
-   
-2.  With processed input data, run the following command to start training:
-    ```
-    python train.py --config configs/default.txt --data_dir {sequence_directory}
-    ```
-## Modification
-#### [Thesis paper](https://github.com/AliveGorilla/Master-thesis-Omnimotion-Optimization/blob/main/MasterThesisTlepin.pdf)
+---
 
-A more detailed description of this work can be found in my thesis. Below is a summary of the modifications and changes I made:
+# Training
 
-1. The original implementation consisted of a large number of different loss functions. I simplified the model by removing unnecessary losses (specifically, the "smoothness loss") after conducting an empirical analysis.
+## 1. Data Preparation
 
-2. I modified the hard-mining method. Instead of randomly selecting regions with the highest probability of error, I aggregated these maps over the course of training. This allowed the model to focus on regions with consistently high errors over time. [Implementation](https://github.com/AliveGorilla/Master-thesis-Omnimotion-Optimization/blob/23850c67ce1fb5c612bdb2d418a90250d2e32801/loaders/raft.py#L107-L122).
+Please follow the preprocessing instructions:
 
-3. The original OmniMotion model did not include 3D coordinate encoding. I added a simple encoding option by applying periodic functions to the 3-dimensional input coordinates, producing a 66-dimensional vector as output (see ReadMe). 
+```text
+preprocessing/README.md
+```
 
-4. During the training stage, the Invertible Neural Network trained the time representation (frame number) more than once in each epoch. I addressed this by locking the training of the time representation at the 40,000-epoch threshold and using the final result as a global representation ("freezing" it). [Implementation](https://github.com/AliveGorilla/Master-thesis-Omnimotion-Optimization/blob/23850c67ce1fb5c612bdb2d418a90250d2e32801/trainer.py#L577-L590), [Usage](https://github.com/AliveGorilla/Master-thesis-Omnimotion-Optimization/blob/23850c67ce1fb5c612bdb2d418a90250d2e32801/trainer.py#L216-L251).
+You can also use the processed dataset provided by the original OmniMotion project:
 
-5. In addition to freezing the number of epochs, I applied a faster and more advanced method, [TCNN](https://github.com/NVlabs/tiny-cuda-nn), to further enhance the training process. [Implementation](https://github.com/AliveGorilla/Master-thesis-Omnimotion-Optimization/blob/23850c67ce1fb5c612bdb2d418a90250d2e32801/trainer.py#L28-L62), [Usage](https://github.com/AliveGorilla/Master-thesis-Omnimotion-Optimization/blob/23850c67ce1fb5c612bdb2d418a90250d2e32801/trainer.py#L216-L251).
+https://omnimotion.cs.cornell.edu/dataset/
 
-## Future Ideas
+---
 
-During my research, I identified several advanced ideas and solutions that could further improve the project:
+## 2. Start Training
 
-1. The [CoTracker](https://github.com/facebookresearch/co-tracker) model demonstrates better and more accurate results compared to RAFT. Through testing, I confirmed that RAFT can be replaced. However, I encountered optimization issues that I hope to address in the future.
+```bash
+python train.py --config configs/default.txt --data_dir {sequence_directory}
+```
 
-2. In the pre-processing stage, the DINO model used for appearance checking can be upgraded to the more recent DINO v2 for better performance.
+---
 
-3. Several improvements to OmniMotion suggest that incorporating additional information (e.g., depth maps) can significantly enhance the overall quality of the results.
+# Thesis
 
-While these ideas remain unimplemented due to time constraints, I plan to explore them further as a future PhD student or as part of a personal project.
+A more detailed explanation of the optimization methods can be found in the thesis paper:
 
-PS. 
-For training and testing the setting from the [Issues report](https://github.com/qianqianwang68/omnimotion/issues/37) were used.
+[Master Thesis PDF](https://github.com/AliveGorilla/Master-thesis-Omnimotion-Optimization/blob/main/MasterThesisTlepin.pdf)
+
+---
+
+# Future Improvements
+
+Potential next steps include:
+
+- replacing RAFT with CoTracker,
+- upgrading DINO to DINOv2,
+- integrating depth-aware tracking,
+- optimizing memory efficiency for longer sequences,
+- improving real-time inference capabilities.
+
+---
+
+# Acknowledgements
+
+This project is based on the original OmniMotion framework developed by the Cornell Vision and Learning Lab.
+
+Training and testing settings were adapted from the original issue discussions:
+
+https://github.com/qianqianwang68/omnimotion/issues/37
