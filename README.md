@@ -66,7 +66,7 @@ Dense Motion Tracking Output
 ```
 Example:
 
-![Architecture](assets/ours.png)
+![Architecture](ours.png)
 
 ---
 
