@@ -64,14 +64,9 @@ Hard Mining Optimization
         ↓
 Dense Motion Tracking Output
 ```
-
-> Add architecture diagram here (recommended: Miro / Figma / draw.io)
-
 Example:
 
-```md
-![Architecture](assets/architecture.png)
-```
+![Architecture](assets/ours.png)
 
 ---
 
